@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>画板</title>
+</head>
+<body>
+  <canvas id="canvas"></canvas>
+</body>
+<script>
+  const canvas = document.getElementById('canvas');
+  const ctx = canvas.getContext('2d');
+
+  canvas.width = document.documentElement.clientWidth;
+  canvas.height = document.documentElement.clientHeight;
+  ctx.fillStyle = "black";
+  ctx.lineWidth = 10;
+  ctx.lineCap = "round";
+
+  let downStatus = false;
+  let lastDot = [];
+  let isTouchDevice = 'ontouchstart' in document.documentElement;
+  console.log(isTouchDevice);
+  canvas.onmousedown = (e) => {
+    downStatus = true;
+    lastDot = [e.clientX, e.clientY];
+  }
+
+  if (isTouchDevice) {
+
+    canvas.ontouchstart = (e) => {
+      let x = e.touches[0].clientX;
+      let y = e.touches[0].clientY;
+      lastDot = [x, y];
+    }
+    canvas.ontouchmove = (e) => {
+      let x = e.touches[0].clientX;
+      let y = e.touches[0].clientY;
+      drawLine(lastDot[0], lastDot[1], x, y);
+      lastDot = [x, y];
+    }
+    
+  } else {
+    canvas.onmousemove = (e) => {
+      if (downStatus) {
+        drawLine(lastDot[0], lastDot[1], e.clientX, e.clientY)
+        lastDot = [e.clientX, e.clientY];
+      }
+    }
+  }
+
+  
+  canvas.onmouseup = () => {
+    downStatus = false;
+  }
+
+  function drawLine(x1, y1, x2, y2) {
+    ctx.beginPath();
+      ctx.moveTo(x1, y1);
+      ctx.lineTo(x2, y2);
+      ctx.stroke();
+  }
+</script>
+</html>
